@@ -8,21 +8,10 @@ var CRAWLED_LINKS = [];
 // Define all the hyperlinks on the page
 // Recursively go through each
 
-// crawler(INPUT_URL);
-
-function crawler(url) {
-  
-  var urls = getUrls();
-
-  urls.forEach(function(element, index, array) {
-    CRAWLED_LINKS.push(element);
-    crawler(element);
-  });
-}
-
 function fetchPage() {
   var pageToVisit = INPUT_URL;
   console.log("Visiting page " + pageToVisit);
+
   request(pageToVisit, function(error, response, body) {
     if (error) {
       console.log("Error: " + error);
@@ -45,4 +34,13 @@ function fetchPage() {
 }
 
 fetchPage();
-console.log(CRAWLED_LINKS);
+
+// function crawler(url) {
+  
+//   var urls = getUrls();
+
+//   urls.forEach(function(element, index, array) {
+//     CRAWLED_LINKS.push(element);
+//     crawler(element);
+//   });
+// }
