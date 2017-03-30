@@ -25,6 +25,14 @@ function fetchPage(pageToVisit) {
       var $ = cheerio.load(body);
       var re = new RegExp('https', 'g');
 
+
+      // Temporary limit to the crawling to not crash anything. Dosen't work!!
+      if (CRAWLED_LINKS.length === 1000) {
+        console.log(CRAWLED_LINKS);
+        return console.log('Crawling stoped automatically on 1 000! Above are all the links.');
+
+      }
+
       if ($("a") !== undefined) {
         $("a").each(function(element, index, array) {
           if (re.test($(this).attr('href'))) {
