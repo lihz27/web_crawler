@@ -2,14 +2,13 @@ var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
 
-var INPUT_URL = 'https://techcrunch.com/'
+var INPUT_URL = 'https://www.kivra.com/';
 var CRAWLED_LINKS = [];
 
 // Define all the hyperlinks on the page
 // Recursively go through each
 
-function fetchPage() {
-  var pageToVisit = INPUT_URL;
+function fetchPage(pageToVisit) {
   console.log("Visiting page " + pageToVisit);
 
   request(pageToVisit, function(error, response, body) {
@@ -21,26 +20,24 @@ function fetchPage() {
     console.log("Status code: " + response.statusCode);
 
     if (response.statusCode === 200) {
+
        // Parse the document body
       var $ = cheerio.load(body);
+      var re = new RegExp('https', 'g');
 
-      $("a").each(function(element, index, array) {
-        CRAWLED_LINKS.push($(this).attr('href'));
-      });
-
-      console.log(CRAWLED_LINKS);
+      if ($("a") !== undefined) {
+        $("a").each(function(element, index, array) {
+          if (re.test($(this).attr('href'))) {
+            CRAWLED_LINKS.push($(this).attr('href'));
+            fetchPage($(this).attr('href'));
+            console.log('Crawled ' + pageToVisit + ', number of links are now' + CRAWLED_LINKS.length);
+          }
+        });
+      } else {
+        console.log('Done crawling! Number of links found is: ' + CRAWLED_LINKS);
+      }
      }
   });
 }
 
-fetchPage();
-
-// function crawler(url) {
-  
-//   var urls = getUrls();
-
-//   urls.forEach(function(element, index, array) {
-//     CRAWLED_LINKS.push(element);
-//     crawler(element);
-//   });
-// }
+fetchPage(INPUT_URL);
