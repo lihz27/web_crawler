@@ -2,8 +2,14 @@ var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
 
-var INPUT_URL = 'https://www.kivra.com/';
-var CRAWLED_LINKS = [];
+var INPUT_URL = 'http://www.allabolag.se/';
+// var CRAWLED_LINKS = [];
+
+var CRAWLED_LINKS = {
+  'length': 0,
+  'urls': {}
+};
+
 
 // Define all the hyperlinks on the page
 // Recursively go through each
@@ -23,29 +29,41 @@ function fetchPage(pageToVisit) {
 
        // Parse the document body
       var $ = cheerio.load(body);
-      var re = new RegExp('https', 'g');
+      var re = new RegExp('^http|www.allabolag.se', 'g');
 
 
       // Temporary limit to the crawling to not crash anything. Dosen't work!!
       if (CRAWLED_LINKS.length === 1000) {
-        console.log(CRAWLED_LINKS);
-        return console.log('Crawling stoped automatically on 1 000! Above are all the links.');
+        console.log('IM HERER');
+        console.log('Crawling stoped automatically on 1 000! Above are all the links.');
+        return;
+      } else if (($("a") !== undefined)) {
+          $("a").each(function(element, index, array) {
+            if (re.test($(this).attr('href'))) {
+              var link = $(this).attr('href');
+              if (link in CRAWLED_LINKS.urls) {
+                return;
+              } else {
+                // writeToTree(link);
 
-      }
-
-      if ($("a") !== undefined) {
-        $("a").each(function(element, index, array) {
-          if (re.test($(this).attr('href'))) {
-            CRAWLED_LINKS.push($(this).attr('href'));
-            fetchPage($(this).attr('href'));
-            console.log('Crawled ' + pageToVisit + ', number of links are now' + CRAWLED_LINKS.length);
-          }
-        });
+                CRAWLED_LINKS.urls[link] = link;
+                CRAWLED_LINKS.length ++;
+                fetchPage(link);
+                console.log('Crawled ' + pageToVisit + ', number of links are now ' + CRAWLED_LINKS.length);
+              }
+            }
+          });
       } else {
         console.log('Done crawling! Number of links found is: ' + CRAWLED_LINKS);
       }
      }
   });
 }
+
+function writeToTree(url) {
+
+}
+
+
 
 fetchPage(INPUT_URL);
