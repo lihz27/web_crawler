@@ -64,6 +64,4 @@ function writeToTree(url) {
 
 }
 
-
-
 fetchPage(INPUT_URL);
